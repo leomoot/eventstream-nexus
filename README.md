@@ -116,33 +116,28 @@ eventstream-nexus/
             └── (raw generated sources before compilation)
 ```
 Generated code lives in
-<code>/target/classes/.../generated/...</code>
+<code>target/classes/.../generated/...</code>
 and is not committed.
 </details>
 
-<details open>
+<details>
 <summary>API‑first workflow</summary>
-1. Edit <code>src/main/openapi/openapi.yaml</code>.
+
+1. Edit <code class="font-ligatures-none mx-0.5 rounded-[4px] border border-stroke-300 bg-accent-200/60 px-1 py-px font-mono text-foreground-800 text-sm dark:bg-accent-200" style="opacity: 1;">src/main/openapi/openapi.yaml</code>.
   Define:
   - endpoints
   - request/response schemas
   - required headers (including Idempotency-Key)
   - validation rules
-
 2. Generate code
-<code>
-bash
+```
 mvn clean generate-sources
+```
 This generates:
-</code>
-API interfaces (generated.api)
-    
-record models (generated.model)
-
+- API interfaces (generated.api)
+- record models (generated.model)
 3. Implement generated APIs
-
-Controllers implement the generated interfaces and delegate to services.
-  
+- Controllers implement the generated interfaces and delegate to services.
 </details>
 
 <details>
@@ -170,8 +165,7 @@ Cleanup is handled via a scheduled job or database TTL.
 <details>
 <summary>Mapping (MapStruct + Java Records)</summary>
 
-```
-EventStream Nexus uses Java records for all API and service‑level models:
+EventStream Nexus uses **Java records** for all API and service‑level models:
 - request bodies
 - response bodies
 - event payloads
@@ -184,12 +178,95 @@ Records provide:
 - no Lombok dependency
 - perfect compatibility with OpenAPI
 
-JPA entities remain regular classes due to JPA constraints.
-
-MapStruct maps: Record ↔ Entity
-
-All mappers extend a shared BaseMapper interface.
+Example record models:
 ```
+public record CreateClientRequest(String name, String email) {}
+public record Client(Long id, String name, String email, Instant createdAt) {}
+```
+**JPA entities** remain regular classes due to JPA requirements (no‑arg constructor, mutable fields)
+
+MapStruct handles mapping between records and entities:
+```
+@Mapper(componentModel = "spring")
+public interface ClientMapper {
+
+    Client toModel(ClientEntity entity);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", expression = "java(java.time.Instant.now())")
+    ClientEntity toEntity(CreateClientRequest request);
+}
+```
+This keeps the domain model explicit, immutable at the edges, and free of Lombok.
 </details>
 
-All mappers extend a shared `BaseMapper` interface for consistency.
+<details>
+<summary>Database migrations (Liquibase)</summary>
+Liquibase manages schema evolution.
+
+- Master changelog:
+<code>src/main/resources/db/changelog/changelog-master.yaml</code>
+
+- ChangeSets:
+<code>src/main/resources/db/changelog/changes/*.xml</code>
+
+Migrations run automatically at startup and are validated in CI.
+</details>
+
+<details open>
+<summary>Kafka integration (optional)</summary>
+
+Kafka is used for **outbound domain events** only.
+
+Example:
+- when a client is created, a <code>client.created</code> event is published with a record payload.
+</details>
+
+Testing
+JUnit Jupiter for unit and integration tests
+
+MapStruct mapper tests for record ↔ entity correctness
+
+Spring Boot tests for controllers and services
+
+Testcontainers (optional) for Postgres and Kafka integration testing
+
+Example mapper test:
+```
+@SpringBootTest
+class ClientMapperTest {
+
+    @Autowired
+    ClientMapper mapper;
+
+    @Test
+    void mapsEntityToRecordModel() {
+        var entity = new ClientEntity("Leo", "leo@example.com", Instant.parse("2026-01-14T12:00:00Z"));
+        var model = mapper.toModel(entity);
+        assertEquals("Leo", model.name());
+        assertEquals("leo@example.com", model.email());
+    }
+}
+```
+CI pipeline (GitHub Actions)
+The CI pipeline runs on pushes and pull requests:
+
+mvn clean generate-sources – OpenAPI → record models + APIs
+
+mvn -B clean verify – compile, MapStruct generation, tests
+
+Liquibase validation against a test Postgres
+
+OWASP dependency check
+
+CodeQL analysis
+
+This ensures:
+
+no broken record models
+
+no mapper mismatches
+
+no invalid DB migrations
+
+no security regressions
