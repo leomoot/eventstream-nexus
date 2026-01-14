@@ -227,6 +227,31 @@ This keeps the domain model explicit, immutable at the edges, and free of Lombok
 </details>
 
 <details>
+<summary>Scheduling and ShedLock</summary>
+
+EventStream Nexus uses ShedLock to safely run scheduled jobs in a clustered environment.
+ShedLock uses PostgreSQL to ensure only one instance executes a scheduled task at a time.
+
+The shedlock table:
+```
+shedlock
+  name (PK)
+  lock_until
+  locked_at
+  locked_by
+```
+</details>
+
+<details>
+<summary>Idempotency cleanup job</summary>
+
+- runs every hour (default, configurable)
+- deletes records older than 24 hours (default, configurable)
+- uses <code>usingDbTime()</code> for distributed safety
+- guarded by ShedLock
+</details>
+
+<details>
 <summary>Database migrations (Liquibase)</summary>
 Liquibase manages schema evolution.
 
