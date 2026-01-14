@@ -267,8 +267,7 @@ Migrations run automatically at startup and are validated in CI.
 
 Kafka is used for **outbound domain events** only.
 
-Example:
-- when a client is created, a <code>client.created</code> event is published with a record payload.
+Example: when a client is created, a <code>client.created</code> event is published with a record payload.
 
 - Avro schemas live in src/main/avro/
 - Maven generates Java classes automatically (in <code>target/classes/.../generated/avro</code> </code>)
