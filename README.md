@@ -27,13 +27,13 @@
 
 EventStream Nexus is an **API‑first**, **contract‑driven**, **idempotent**, and **event‑enabled** backend service built with: 
 - **Spring Boot 4**
-- **Java 25**
+- **Java 25** (Virtual Threads)
 - **OpenAPI‑first development** (single source of truth)
 - **Java records** for all API/service models
 - **MapStruct** for mapping between records and JPA entities
 - **PostgreSQL + Liquibase** for schema evolution
 - **ShedLock** for distributed‑safe scheduling
-- **Kafka (optional)** for outbound domain events
+- **Kafka + Avro** for outbound domain events
 - **Maven** for reproducible builds
 - **GitHub Actions** for CI, CodeQL, OWASP, and Liquibase validation
 
@@ -141,9 +141,7 @@ eventstream-nexus/
         └── openapi/
             └── (raw generated sources before compilation)
 ```
-Generated code lives in
-<code>target/classes/.../generated/...</code>
-and is not committed.
+Generated code lives in <code>target/classes/.../generated/...</code> and is not committed.
 </details>
 
 <details>
@@ -265,12 +263,17 @@ Migrations run automatically at startup and are validated in CI.
 </details>
 
 <details>
-<summary>Kafka integration (optional)</summary>
+<summary>Kafka & Avro integration</summary>
 
 Kafka is used for **outbound domain events** only.
 
 Example:
 - when a client is created, a <code>client.created</code> event is published with a record payload.
+
+- Avro schemas live in src/main/avro/
+- Maven generates Java classes automatically (in <code>target/classes/.../generated/avro</code> </code>)
+- Kafka producers use KafkaAvroSerializer
+
 </details>
 
 <details>
@@ -300,7 +303,7 @@ class ClientMapperTest {
 ```
 </details>
 <details>
-<summary>CI pipeline (GitHub Actions)</summary     
+<summary>CI pipeline (GitHub Actions)</summary>   
  
 The CI pipeline runs on pushes and pull requests:
 - <code>mvn clean generate-sources</code><br>
@@ -318,10 +321,10 @@ This ensures:
 - no mapper mismatches
 - no invalid DB migrations
 - no security regressions
-</details
+</details>
 
 <details>
-<summary>Development commands</summary  
+<summary>Development commands</summary>
 
 Generate API + record models
 ``` console
