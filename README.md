@@ -74,3 +74,58 @@ It cleanly separates write‑side domain logic from read‑optimized projections
                          |                READ API               |
                          |   GET /orders/client/{id}, /status    |
                          +----------------------------------------+
+...
+## Project structure
+eventstream-nexus/
+  application/ (write/read application layer)
+  domain/      (pure domain model)
+  infrastructure/ (Kafka, Avro, DB, k8s)
+  api/         (DTOs, mappers, validation)
+  src/main/avro/ (Avro schemas)
+  ...
+
+  ...
+Getting started
+bash
+mvn clean package
+java -jar target/eventstream-nexus-0.0.1-SNAPSHOT.jar
+Build Docker image:
+
+bash
+docker build -t eventstream-nexus .
+Database migrations (Liquibase)
+Liquibase is used for versioned schema management.
+
+Master changelog: src/main/resources/db/changelog/changelog-master.xml
+
+Individual changes: src/main/resources/db/changelog/changes/*.xml
+
+Migrations run automatically on application startup.
+
+Security
+OWASP Dependency Check integrated into Maven (verify phase)
+
+CodeQL GitHub Advanced Security workflow
+
+Liquibase migration validation pipeline
+
+Testing
+Unit tests for domain logic
+
+Integration tests with Testcontainers (Kafka + PostgreSQL)
+
+Kafka contract tests for Avro events
+
+Virtual‑thread concurrency tests
+
+Changelog
+See CHANGELOG.md.
+
+Contributing
+See CONTRIBUTING.md.
+
+Code of Conduct
+See CODE_OF_CONDUCT.md.
+
+License
+MIT License.
