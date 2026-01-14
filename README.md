@@ -1,4 +1,29 @@
-<p align="center"> <img src="https://dummyimage.com/600x150/000/fff&text=EventStream+Nexus" alt="EventStream Nexus Logo"/> </p> <p align="center"> <strong>API‑first • Idempotent • Event‑enabled • MapStruct‑powered • Java 25</strong> </p> <p align="center"> <!-- Core stack --> <img src="https://img.shields.io/badge/Java-25-007396?style=for-the-badge" /> <img src="https://img.shields.io/badge/Spring%20Boot-4.0.0-6DB33F?style=for-the-badge" /> <img src="https://img.shields.io/badge/API-OpenAPI%203.0-6BA539?style=for-the-badge" /> <img src="https://img.shields.io/badge/Mapping-MapStruct-FF6F00?style=for-the-badge" /> <img src="https://img.shields.io/badge/Boilerplate-Lombok-CA2C92?style=for-the-badge" /> <!-- Infrastructure --> <img src="https://img.shields.io/badge/Database-PostgreSQL%2015-336791?style=for-the-badge" /> <img src="https://img.shields.io/badge/DB-Liquibase-orange?style=for-the-badge" /> <img src="https://img.shields.io/badge/Events-Kafka-231F20?style=for-the-badge" /> <!-- CI / Quality --> <img src="https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?style=for-the-badge" /> <img src="https://img.shields.io/badge/Security-CodeQL-FF0000?style=for-the-badge" /> <img src="https://img.shields.io/badge/Dependencies-OWASP%20Checked-8A2BE2?style=for-the-badge" /> <!-- Optional metrics --> <img src="https://img.shields.io/badge/Tests-Coverage%20Ready-4CAF50?style=for-the-badge" /> <img src="https://img.shields.io/badge/Docker-Image%20Ready-0db7ed?style=for-the-badge" /> <!-- License --> <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" /> </p> 
+<p align="center">
+  <img src="https://dummyimage.com/600x150/000/fff&text=EventStream+Nexus" alt="EventStream Nexus Logo"/> 
+</p> 
+<p align="center">
+  <strong>API‑first • Idempotent • Event‑enabled • Java Records • Spring Boot 4 • Java 2</strong> 
+</p> 
+<p align="center"> 
+<!-- Core stack -->
+<img src="https://img.shields.io/badge/Java-25-007396?style=for-the-badge" /> 
+<img src="https://img.shields.io/badge/Spring%20Boot-4.0.0-6DB33F?style=for-the-badge" /> 
+<img src="https://img.shields.io/badge/API-OpenAPI%203.0-6BA539?style=for-the-badge" /> 
+<img src="https://img.shields.io/badge/Mapping-MapStruct-FF6F00?style=for-the-badge" /> 
+<img src="https://img.shields.io/badge/Boilerplate-Lombok-CA2C92?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Scheduling-ShedLock-7952B3?style=for-the-badge" />
+<!-- Infrastructure -->
+<img src="https://img.shields.io/badge/Database-PostgreSQL%2015-336791?style=for-the-badge" /> 
+<img src="https://img.shields.io/badge/DB-Liquibase-orange?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Events-Kafka-231F20?style=for-the-badge" />
+<!-- CI / Quality -->
+<img src="https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?style=for-the-badge" /> 
+<img src="https://img.shields.io/badge/Dependencies-OWASP%20Checked-8A2BE2?style=for-the-badge" /> 
+<!-- Optional metrics --> 
+<img src="https://img.shields.io/badge/Tests-Coverage%20Ready-4CAF50?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Docker-Image%20Ready-0db7ed?style=for-the-badge" /> 
+<!-- License -->
+<img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" /> </p> 
 
 EventStream Nexus is an **API‑first**, **contract‑driven**, **idempotent**, and **event‑enabled** backend service built with: 
 - **Spring Boot 4**
@@ -7,6 +32,7 @@ EventStream Nexus is an **API‑first**, **contract‑driven**, **idempotent**, 
 - **Java records** for all API/service models
 - **MapStruct** for mapping between records and JPA entities
 - **PostgreSQL + Liquibase** for schema evolution
+- **ShedLock** for distributed‑safe scheduling
 - **Kafka (optional)** for outbound domain events
 - **Maven** for reproducible builds
 - **GitHub Actions** for CI, CodeQL, OWASP, and Liquibase validation
@@ -130,7 +156,7 @@ and is not committed.
   - required headers (including Idempotency-Key)
   - validation rules
 2. Generate code
-```
+``` console
 mvn clean generate-sources
 ```
 This generates:
@@ -186,7 +212,7 @@ public record Client(Long id, String name, String email, Instant createdAt) {}
 **JPA entities** remain regular classes due to JPA requirements (no‑arg constructor, mutable fields)
 
 MapStruct handles mapping between records and entities:
-```
+``` java
 @Mapper(componentModel = "spring")
 public interface ClientMapper {
 
@@ -213,7 +239,7 @@ Liquibase manages schema evolution.
 Migrations run automatically at startup and are validated in CI.
 </details>
 
-<details open>
+<details>
 <summary>Kafka integration (optional)</summary>
 
 Kafka is used for **outbound domain events** only.
@@ -222,17 +248,16 @@ Example:
 - when a client is created, a <code>client.created</code> event is published with a record payload.
 </details>
 
-Testing
-JUnit Jupiter for unit and integration tests
-
-MapStruct mapper tests for record ↔ entity correctness
-
-Spring Boot tests for controllers and services
-
-Testcontainers (optional) for Postgres and Kafka integration testing
+<details>
+<summary>Testing</summary     
+    
+**JUnit Jupiter** for unit and integration tests<br>
+**MapStruct mapper tests** for record ↔ entity correctness<br>
+**Spring Boot tests** for controllers and services<br>
+**Testcontainers** (optional) for Postgres and Kafka integration testing<br>
 
 Example mapper test:
-```
+``` java
 @SpringBootTest
 class ClientMapperTest {
 
@@ -248,25 +273,45 @@ class ClientMapperTest {
     }
 }
 ```
-CI pipeline (GitHub Actions)
+</details>
+<details>
+<summary>CI pipeline (GitHub Actions)</summary     
+ 
 The CI pipeline runs on pushes and pull requests:
-
-mvn clean generate-sources – OpenAPI → record models + APIs
-
-mvn -B clean verify – compile, MapStruct generation, tests
-
-Liquibase validation against a test Postgres
-
-OWASP dependency check
-
-CodeQL analysis
+- <code>mvn clean generate-sources</code><br>
+  - OpenAPI → record models + APIs
+  - MapStruct mappers
+  - ShedLock config
+- <code>mvn verify</code><br>
+  - compile, MapStruct generation, tests
+  - Liquibase validation against a test Postgres
+  - OWASP dependency check
+  - CodeQL analysis
 
 This ensures:
+- no broken record models
+- no mapper mismatches
+- no invalid DB migrations
+- no security regressions
+</details
 
-no broken record models
+<details>
+<summary>Development commands</summary  
 
-no mapper mismatches
-
-no invalid DB migrations
-
-no security regressions
+Generate API + record models
+``` console
+mvn clean generate-sources
+````
+Run the application
+``` console
+mvn spring-boot:run
+```
+Build
+``` console
+mvn clean verify
+```
+Run tests
+``` console
+mvn test
+```
+</details>
