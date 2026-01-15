@@ -1,0 +1,19 @@
+
+{
+  "type": "record",
+  "name": "ClientDeletedEvent",
+  "namespace": "nl.leomoot.eventstreamnexus.events",
+  "doc": "Emitted whenever a client is deleted from the system.",
+  "fields": [
+    {
+      "name": "id",
+      "type": "long",
+      "doc": "The unique ID of the deleted client."
+    },
+    {
+      "name": "deletedAt",
+      "type": "string",
+      "doc": "Timestamp of deletion in ISO-8601 format."
+    }
+  ]
+}

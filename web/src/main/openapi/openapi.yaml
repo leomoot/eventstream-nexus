@@ -1,0 +1,240 @@
+openapi: 3.0.3
+info:
+  title: EventStream Nexus API
+  version: 1.0.0
+  description: |
+    API-first contract for EventStream Nexus.
+    All POST endpoints require an Idempotency-Key header.
+    Models are generated as Java records.
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+
+paths:
+
+  /v1/clients:
+    post:
+      summary: Create a new client
+      operationId: createClient
+      tags:
+        - Clients
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Unique key ensuring idempotent POST operations.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateClientRequest'
+      responses:
+        '201':
+          description: Client created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: List clients (paginated)
+      operationId: listClients
+      tags:
+        - Clients
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Number of items to return.
+        - in: query
+          name: cursor
+          schema:
+            type: string
+          description: Cursor for pagination.
+      responses:
+        '200':
+          description: Paginated list of clients
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientPage'
+        '400':
+          description: Invalid pagination parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/clients/{clientId}:
+    get:
+      summary: Get a client by ID
+      operationId: getClient
+      tags:
+        - Clients
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Client found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete a client
+      operationId: deleteClient
+      tags:
+        - Clients
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Client deleted
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+
+  schemas:
+
+    # -------------------------
+    # Request Models
+    # -------------------------
+
+    CreateClientRequest:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+          example: "Leo"
+        email:
+          type: string
+          format: email
+          example: "leo@example.com"
+
+    # -------------------------
+    # Response Models
+    # -------------------------
+
+    Client:
+      type: object
+      required:
+        - id
+        - name
+        - email
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: "Leo"
+        email:
+          type: string
+          format: email
+          example: "leo@example.com"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-01-14T12:00:00Z"
+
+    # -------------------------
+    # Pagination
+    # -------------------------
+
+    ClientPage:
+      type: object
+      required:
+        - items
+        - nextCursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Client'
+        nextCursor:
+          type: string
+          nullable: true
+          example: "eyJpZCI6IDEwMH0="
+
+    # -------------------------
+    # Error Model
+    # -------------------------
+
+    ErrorResponse:
+      type: object
+      required:
+        - timestamp
+        - status
+        - error
+        - message
+        - path
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-01-14T12:00:00Z"
+        status:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: "Not Found"
+        message:
+          type: string
+          example: "Client with ID 123 not found"
+        path:
+          type: string
+          example: "/v1/clients/123"
+        details:
+          type: object
+          additionalProperties: true
+          nullable: true
+          description: Optional structured error details.

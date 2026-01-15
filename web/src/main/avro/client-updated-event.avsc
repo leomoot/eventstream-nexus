@@ -1,0 +1,30 @@
+{
+  "type": "record",
+  "name": "ClientUpdatedEvent",
+  "namespace": "nl.leomoot.eventstreamnexus.events",
+  "doc": "Emitted whenever a client's data is updated.",
+  "fields": [
+    {
+      "name": "id",
+      "type": "long",
+      "doc": "The unique ID of the client."
+    },
+    {
+      "name": "name",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Updated name. Null means unchanged."
+    },
+    {
+      "name": "email",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Updated email. Null means unchanged."
+    },
+    {
+      "name": "updatedAt",
+      "type": "string",
+      "doc": "Timestamp of the update in ISO-8601 format."
+    }
+  ]
+}
