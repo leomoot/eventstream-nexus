@@ -1,0 +1,11 @@
+{
+  "type": "record",
+  "name": "ClientCreatedEvent",
+  "namespace": "nl.leomoot.eventstreamnexus.events",
+  "fields": [
+    { "name": "id", "type": "long" },
+    { "name": "name", "type": "string" },
+    { "name": "email", "type": "string" },
+    { "name": "createdAt", "type": "string" }
+  ]
+}

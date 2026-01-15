@@ -17,6 +17,7 @@
     </modules>
 
     <properties>
+        <avro.version>1.12.1</avro.version>
         <jackson-databind-nullable.version>0.2.8</jackson-databind-nullable.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <openapi.generator.version>7.18.0</openapi.generator.version>
