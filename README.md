@@ -2,7 +2,7 @@
   <img src="https://dummyimage.com/600x150/000/fff&text=EventStream+Nexus" alt="EventStream Nexus Logo"/> 
 </p> 
 <p align="center">
-  <strong>API‑first • Idempotent • Event‑enabled • Java Records • Spring Boot 4 • Java 2</strong> 
+  <strong>API‑first • Idempotent • Event‑enabled • Java Records • Spring Boot 4 • Java 25</strong> 
 </p> 
 <p align="center"> 
 <!-- Core stack -->
