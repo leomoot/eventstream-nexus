@@ -35,7 +35,7 @@ EventStream Nexus is an **API‑first**, **contract‑driven**, **idempotent**, 
 - **ShedLock** for distributed‑safe scheduling
 - **Kafka + Avro** for outbound domain events
 - **Maven** for reproducible builds
-- **GitHub Actions** for CI, CodeQL, OWASP, and Liquibase validation
+- **GitHub Actions** for CI, CodeQL, OWASP and Liquibase validation
 
 The OpenAPI specification defines the entire API surface. All API interfaces and record models are generated automatically.
 
