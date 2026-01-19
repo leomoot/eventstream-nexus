@@ -27,7 +27,7 @@ public class ClientEntity {
     private Instant createdAt;
 
     protected ClientEntity() {
-        // JPA requires a no-arg constructor
+        // JPA requires a no-arg constructor for entity instantiation
     }
 
     public ClientEntity(String name, String email, Instant createdAt) {

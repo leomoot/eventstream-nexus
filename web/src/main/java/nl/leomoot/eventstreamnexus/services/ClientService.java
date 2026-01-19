@@ -1,18 +1,23 @@
 package nl.leomoot.eventstreamnexus.services;
 
 import java.util.UUID;
+
 import nl.leomoot.eventstreamnexus.domain.model.ClientEntity;
 import nl.leomoot.eventstreamnexus.model.CreateClientRequest;
 import nl.leomoot.eventstreamnexus.services.dto.ClientPageDto;
 
+/** 
+ * Service interface for managing {@link ClientEntity} instances
+ * and exposing {@link ClientPageDto} views. 
+ */
 public interface ClientService {
 
     /**
-     * Create a new client.
+     * Create a new {@link ClientEntity}.
      * 
-     * @param idempotencyKey for the request
-     * @param request data for creating the client
-     * @return the created client entity
+     * @param idempotencyKey idempotency guard for the request
+     * @param request data for creating the client via {@link CreateClientRequest}
+     * @return the created {@link ClientEntity}
      */
     ClientEntity createClient(UUID idempotencyKey, CreateClientRequest request);
 
@@ -21,22 +26,22 @@ public interface ClientService {
      * 
      * @param limit number of clients to return
      * @param cursor pagination cursor
-     * @return a page of clients
+     * @return a {@link ClientPageDto} page of clients
      */
     ClientPageDto listClients(Integer limit, String cursor);
 
     /**
      * Get a client by ID.
      * 
-     * @param identifier of the client to retrieve
-     * @return the client entity
+     * @param id identifier of the client to retrieve
+     * @return the {@link ClientEntity}
      */
     ClientEntity getClient(Long id);
 
     /**
      * Delete a client by ID.
      * 
-     * @param identifier of the client to delete
+     * @param id identifier of the client to delete
      */
     void deleteClient(Long id);
 }

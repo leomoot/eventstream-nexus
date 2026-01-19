@@ -21,7 +21,7 @@ paths:
         - Clients
       parameters:
         - in: header
-          name: Idempotency-Key
+          name: X-Idempotency-Key
           required: true
           schema:
             type: string
@@ -207,34 +207,18 @@ components:
     # -------------------------
     # Error Model
     # -------------------------
-
     ErrorResponse:
       type: object
       required:
-        - timestamp
-        - status
-        - error
+        - code
         - message
-        - path
       properties:
-        timestamp:
+        code:
           type: string
-          format: date-time
-          example: "2026-01-14T12:00:00Z"
-        status:
-          type: integer
-          example: 404
-        error:
-          type: string
-          example: "Not Found"
+          description: Machine-readable error code
+          example: missing_header
         message:
           type: string
-          example: "Client with ID 123 not found"
-        path:
-          type: string
-          example: "/v1/clients/123"
-        details:
-          type: object
-          additionalProperties: true
-          nullable: true
-          description: Optional structured error details.
+          description: Human-readable explanation
+          example: "Required header 'X-Idempotency-Key' is missing"
+

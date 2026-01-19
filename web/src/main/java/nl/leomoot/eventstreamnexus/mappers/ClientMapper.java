@@ -6,8 +6,14 @@ import org.mapstruct.Mapping;
 import nl.leomoot.eventstreamnexus.domain.model.ClientEntity;
 import nl.leomoot.eventstreamnexus.model.Client;
 import nl.leomoot.eventstreamnexus.model.ClientPage;
+import nl.leomoot.eventstreamnexus.model.CreateClientRequest;
 import nl.leomoot.eventstreamnexus.services.dto.ClientPageDto;
 
+/** 
+ * Mapper for converting between {@link ClientEntity} and {@link Client} models.
+ * 
+ * @see TimeMapper for time-related mappings.
+ */
 @Mapper(
     componentModel = "spring",
     uses = { TimeMapper.class }
@@ -15,19 +21,29 @@ import nl.leomoot.eventstreamnexus.services.dto.ClientPageDto;
 public interface ClientMapper {
 
     /**
-     * Map a ClientEntity to API Client model.
+     * Maps a {@link ClientEntity} to API {@link Client} model.
      * 
-     * @param entity the ClientEntity to map
-     * @return the mapped Client model
+     * @param entity the {@link ClientEntity} to map
+     * @return the mapped {@link Client}
      */
     Client toApi(ClientEntity entity);
 
     /**
-     * Map a ClientPageDto to API ClientPage model.
+     * Maps a {@link ClientPageDto} to API {@link ClientPage} model.
      * 
-     * @param entity the ClientPageDto to map
-     * @return the mapped ClientPage model
+     * @param entity the {@link ClientPageDto} to map
+     * @return the mapped {@link ClientPage}
      */
     @Mapping(target = "items", expression = "java(entity.items().stream().map(this::toApi).toList())")
     ClientPage toApi(ClientPageDto entity);
+
+    /**
+     * Maps a {@link CreateClientRequest} to {@link ClientEntity} for persistence.
+     * 
+     * @param request the {@link CreateClientRequest} to map
+     * @return the mapped {@link ClientEntity}
+     */
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", expression = "java(java.time.Instant.now())") 
+    ClientEntity toEntity(CreateClientRequest request);
 }
