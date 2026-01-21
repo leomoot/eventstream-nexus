@@ -1,8 +1,0 @@
-databaseChangeLog:
-  - changeSet:
-      id: 001-init-schema
-      author: leo
-      changes:
-        - sql:
-            sql: |
-              CREATE SCHEMA IF NOT EXISTS public;

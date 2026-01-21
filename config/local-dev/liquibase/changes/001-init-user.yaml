@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-app-user
+      author: lmo
+      changes:
+        - sql:
+            sql: |
+
+              CREATE ROLE eventstream_rw;
+              GRANT USAGE ON SCHEMA eventstream TO eventstream_rw;
+              ALTER DEFAULT PRIVILEGES IN SCHEMA eventstream
+              GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO eventstream_rw;
+              
+              CREATE USER eventstream_app WITH PASSWORD 'very_secure_password';
+              GRANT eventstream_rw TO eventstream_app;
+
+
+              

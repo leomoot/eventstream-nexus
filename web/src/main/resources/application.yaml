@@ -5,22 +5,31 @@ spring:
   application:
     name: eventstream-nexus
 
+  threads:
+    virtual:
+      enabled: true
+
   datasource:
     url: jdbc:postgresql://localhost:5432/eventstream
-    username: eventstream
-    password: eventstream
+    username: eventstream_app
+    password: very_secure_password
     driver-class-name: org.postgresql.Driver
 
-  jpa:
-    hibernate:
-      ddl-auto: none
-    properties:
-      hibernate:
-        format_sql: true
-        jdbc:
-          time_zone: UTC
-    open-in-view: false
-    show-sql: true
+    hikari:
+      pool-name: EventStream-HikariPool
+
+      # Virtual-thread optimized settings
+      maximum-pool-size: 10        # virtual threads don't block, so keep this low
+      minimum-idle: 2
+      idle-timeout: 30000          # 30s
+      max-lifetime: 1800000        # 30m (Postgres-friendly)
+      connection-timeout: 2000     # 2s fail-fast
+      validation-timeout: 1000     # 1s
+      leak-detection-threshold: 0  # disable unless debugging
+
+      # PostgreSQL recommended
+      auto-commit: false
+      connection-test-query: "SELECT 1"
 
   kafka:
     bootstrap-servers: localhost:9092
@@ -34,10 +43,6 @@ spring:
       value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
       properties:
         schema.registry.url: http://localhost:8081
-
-  threads:
-    virtual:
-      enabled: true
 
 logging:
   level:
