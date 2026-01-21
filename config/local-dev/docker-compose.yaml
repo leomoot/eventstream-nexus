@@ -1,0 +1,64 @@
+
+services:
+  # ---------------------------------------------------------
+  # PostgreSQL Database
+  # ---------------------------------------------------------
+  postgres:
+    image: postgres:16
+    container_name: eventstream-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: eventstream_liquibase
+      POSTGRES_PASSWORD: eventstream_secret
+      POSTGRES_DB: eventstream
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eventstream_liquibase -d eventstream"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
+    networks:
+      - eventstream_network
+
+  # ---------------------------------------------------------
+  # Liquibase migration runner (runs once, then exits)
+  # ---------------------------------------------------------
+  liquibase:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM liquibase/liquibase:latest
+        RUN lpm add postgresql --global
+    depends_on:
+      postgres:
+        condition: service_healthy
+    container_name: eventstream-liquibase  
+    environment:
+      LIQUIBASE_COMMAND_URL: jdbc:postgresql://postgres:5432/eventstream?currentSchema=eventstream
+      LIQUIBASE_COMMAND_USERNAME: eventstream_liquibase
+      LIQUIBASE_COMMAND_PASSWORD: eventstream_secret
+      LIQUIBASE_COMMAND_CHANGELOG_FILE: changelog-master.yaml
+      LIQUIBASE_LOG_LEVEL: INFO
+    volumes:
+      - ./liquibase/changelog-master.yaml:/liquibase/changelog-master.yaml
+      - ./liquibase/changes:/liquibase/changes
+    command: update
+    restart: no
+    networks:
+      - eventstream_network
+
+# ---------------------------------------------------------
+# Volumes
+# ---------------------------------------------------------
+volumes:
+  postgres_data:
+
+# ---------------------------------------------------------
+# Volumes
+# ---------------------------------------------------------
+networks:
+  eventstream_network:
+    driver: bridge

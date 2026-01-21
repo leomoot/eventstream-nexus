@@ -48,6 +48,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-kafka</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-avro-serializer</artifactId>
+            <version>${kafka-avro-serializer.version}</version>
+        </dependency>
 
         <!-- Actuator -->
         <dependency>
@@ -86,7 +91,7 @@
             <version>${shedlock.version}</version>
         </dependency>
 
-        <!-- Avro -->
+        <!-- AVRO -->
         <dependency>
             <groupId>org.apache.avro</groupId>
             <artifactId>avro-compiler</artifactId>

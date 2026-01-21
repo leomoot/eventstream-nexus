@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 003-add-idempotency-table
-      author: leo
+      author: lmo
       changes:
         - createTable:
             tableName: idempotency_keys

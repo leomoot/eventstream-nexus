@@ -19,6 +19,7 @@
     <properties>
         <avro.version>1.12.1</avro.version>
         <jackson-databind-nullable.version>0.2.8</jackson-databind-nullable.version>
+        <kafka-avro-serializer.version>8.1.1</kafka-avro-serializer.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <openapi.generator.version>7.18.0</openapi.generator.version>
         <openapi-to-java-records.version>3.2.1</openapi-to-java-records.version>
@@ -55,5 +56,12 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <url>https://packages.confluent.io/maven/</url>
+        </repository>
+    </repositories>
 
 </project>

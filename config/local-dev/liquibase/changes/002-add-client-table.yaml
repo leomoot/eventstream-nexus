@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 002-add-client-table
-      author: leo
+      author: lmo
       changes:
         - createTable:
             tableName: clients

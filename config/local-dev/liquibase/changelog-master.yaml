@@ -1,6 +1,6 @@
 databaseChangeLog:
   - include:
-      file: changes/001-init-schema.yaml
+      file: changes/001-init-user.yaml
   - include:
       file: changes/002-add-client-table.yaml
   - include:
