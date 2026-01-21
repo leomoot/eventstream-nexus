@@ -10,7 +10,6 @@
 <img src="https://img.shields.io/badge/Spring%20Boot-4.0.0-6DB33F?style=for-the-badge" /> 
 <img src="https://img.shields.io/badge/API-OpenAPI%203.0-6BA539?style=for-the-badge" /> 
 <img src="https://img.shields.io/badge/Mapping-MapStruct-FF6F00?style=for-the-badge" /> 
-<img src="https://img.shields.io/badge/Boilerplate-Lombok-CA2C92?style=for-the-badge" />
 <img src="https://img.shields.io/badge/Scheduling-ShedLock-7952B3?style=for-the-badge" />
 <!-- Infrastructure -->
 <img src="https://img.shields.io/badge/Database-PostgreSQL%2015-336791?style=for-the-badge" /> 
