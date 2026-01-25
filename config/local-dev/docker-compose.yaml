@@ -112,11 +112,11 @@ services:
     networks:
       - eventstream_network
     healthcheck:
-      test: "curl --fail --silent localhost:8080/actuator/health/readiness | grep UP || exit 1"
+      test: ['CMD', 'curl', '--fail', 'http://localhost:8080/actuator/health/liveness']
       interval: 10s
-      timeout: 3s
+      timeout: 5s
       retries: 3
-      start_period: 10s
+      start_period: 30s
 
 # ---------------------------------------------------------
 # Volumes (for persistent storage)
