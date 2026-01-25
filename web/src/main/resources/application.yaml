@@ -10,10 +10,9 @@ spring:
       enabled: true
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/eventstream
+    url: jdbc:postgresql://localhost:5432/eventstream?currentSchema=eventstream
     username: eventstream_app
-    password: very_secure_password
-    driver-class-name: org.postgresql.Driver
+    password: ${EVENTSTREAM_APP_PASSWORD}
 
     hikari:
       pool-name: EventStream-HikariPool
@@ -56,7 +55,11 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health, info, metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
 
 mapstruct:
   unmappedTargetPolicy: ERROR
