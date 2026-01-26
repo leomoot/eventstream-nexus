@@ -4,7 +4,7 @@ services:
   # PostgreSQL Database
   # ---------------------------------------------------------
   postgres:
-    image: postgres:16
+    image: postgres:16@sha256:f992505e18f114c1e5102ac4dcf00f791b44462f6a423d899320f0bbf80e386f
     container_name: eventstream-postgres
     restart: unless-stopped
     ports:
@@ -56,7 +56,7 @@ services:
   # Kafka Topic Initialization
   # ---------------------------------------------------------
   kafka:
-    image: apache/kafka:latest
+    image: apache/kafka:latest@sha256:3f7b939115cd4872e9cee9369d80bd69712fde55f9902f46d793f64848dedc75
     container_name: eventstream-kafka
     restart: unless-stopped
     depends_on:
