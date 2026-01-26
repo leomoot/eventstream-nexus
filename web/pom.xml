@@ -161,11 +161,12 @@
                     </execution>
                 </executions>
             </plugin>
+
             <!-- OpenAPI Generator -->
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>${openapi.generator.version}</version>
+                <version>${openapi-generator.version}</version>
                 <executions>
                     <execution>
                         <id>generate-api</id>
@@ -265,6 +266,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -274,7 +276,41 @@
                 </executions>
             </plugin>
 
+            <!-- Jib plugin for Docker image building -->
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>dockerBuild</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                
+                <configuration>
+                    <from>
+                        <image>eclipse-temurin:${java.version}-jre</image>
+                    </from>
+
+                    <to>
+                        <image>eventstream-nexus</image>
+                        <tags>
+                            <tag>latest</tag>
+                        </tags>
+                    </to>
+
+                    <container>
+                        <mainClass>nl.leomoot.eventstreamnexus.Application</mainClass>
+                        <ports>
+                            <port>${server-port}</port>
+                        </ports>
+                    </container>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
 </project>
+
