@@ -287,10 +287,10 @@
                         </goals>
                     </execution>
                 </executions>
-
                 <configuration>
                     <image>
                         <name>eventstream-nexus:latest</name>
+                        <!-- Gives us the Utilities buildpack for curl (healtcheck) -->
                         <builder>paketobuildpacks/builder-jammy-full</builder>                    
                         <env>
                             <BP_JVM_TYPE>JRE</BP_JVM_TYPE>
