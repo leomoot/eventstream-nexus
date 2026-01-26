@@ -13,7 +13,7 @@
 <img src="https://img.shields.io/badge/Boilerplate-Lombok-CA2C92?style=for-the-badge" />
 <img src="https://img.shields.io/badge/Scheduling-ShedLock-7952B3?style=for-the-badge" />
 <!-- Infrastructure -->
-<img src="https://img.shields.io/badge/Database-PostgreSQL%2015-336791?style=for-the-badge" /> 
+<img src="https://img.shields.io/badge/Database-PostgreSQL%2016-336791?style=for-the-badge" /> 
 <img src="https://img.shields.io/badge/DB-Liquibase-orange?style=for-the-badge" />
 <img src="https://img.shields.io/badge/Events-Kafka-231F20?style=for-the-badge" />
 <!-- CI / Quality -->

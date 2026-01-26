@@ -129,7 +129,6 @@
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -247,11 +246,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
-
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
-
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.mapstruct</groupId>
@@ -268,49 +265,40 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <executions>
+                    <!-- Creates the fat JAR -->                
                     <execution>
+                        <id>repackage</id>
                         <goals>
                             <goal>repackage</goal>
                         </goals>
                     </execution>
-                </executions>
-            </plugin>
-
-            <!-- Jib plugin for Docker image building -->
-            <plugin>
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>jib-maven-plugin</artifactId>
-                
-                <executions>
+                    <!-- Adds build metadata (useful for Actuator /info) -->
                     <execution>
-                        <phase>package</phase>
+                        <id>build-info</id>
                         <goals>
-                            <goal>dockerBuild</goal>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                    <!-- Builds the Docker image -->
+                    <execution>
+                        <id>build-image</id>
+                        <goals>
+                            <goal>build-image-no-fork</goal>
                         </goals>
                     </execution>
                 </executions>
-                
+
                 <configuration>
-                    <from>
-                        <image>eclipse-temurin:${java.version}-jre</image>
-                    </from>
-
-                    <to>
-                        <image>eventstream-nexus</image>
-                        <tags>
-                            <tag>latest</tag>
-                        </tags>
-                    </to>
-
-                    <container>
-                        <mainClass>nl.leomoot.eventstreamnexus.Application</mainClass>
-                        <ports>
-                            <port>${server-port}</port>
-                        </ports>
-                    </container>
+                    <image>
+                        <name>eventstream-nexus:latest</name>
+                        <builder>paketobuildpacks/builder-jammy-full</builder>                    
+                        <env>
+                            <BP_JVM_TYPE>JRE</BP_JVM_TYPE>
+                            <BP_UTILS_INSTALL>curl</BP_UTILS_INSTALL>
+                        </env>
+                    </image>
                 </configuration>
             </plugin>
         </plugins>
     </build>
 </project>
-
