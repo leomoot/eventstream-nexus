@@ -1,1 +1,60 @@
-.
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+
+  "extends": [
+    "config:recommended",
+    "docker:pinDigests",
+    "helpers:pinGitHubActionDigests"
+  ],
+
+  "enabledManagers": [
+    "maven",
+    "dockerfile",
+    "docker-compose",
+    "github-actions"
+  ],
+
+  "labels": ["dependencies"],
+
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 5,
+
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["security"],
+      "groupName": "security updates",
+      "automerge": true,
+      "automergeType": "branch",
+      "labels": ["security"]
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "groupName": "major updates",
+      "schedule": ["after 9pm on sunday"],
+      "labels": ["major-update"]
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "normal dependency updates",
+      "schedule": ["after 9pm every weekday", "before 6am every weekday"],
+      "labels": ["dependency-update"]
+    },
+    {
+      "matchManagers": ["maven"],
+      "groupName": "maven dependencies",
+      "separateMajorMinor": true
+    },
+    {
+      "matchManagers": ["dockerfile", "docker-compose"],
+      "groupName": "docker images"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions"
+    },
+    {
+      "matchPackagePatterns": ["spring-boot"],
+      "groupName": "spring boot"
+    }
+  ]
+}
