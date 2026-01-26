@@ -24,7 +24,7 @@
         <openapi-generator.version>7.18.0</openapi-generator.version>
         <openapi-to-java-records.version>3.2.1</openapi-to-java-records.version>
         <shedlock.version>7.5.0</shedlock.version>
-        <spring-boot.version>4.0.1</spring-boot.version>
+        <spring-boot.version>4.0.2</spring-boot.version>
         <swagger-annotations-jakarta.version>2.2.41</swagger-annotations-jakarta.version>
 
         <testcontainers.version>1.21.4</testcontainers.version>
@@ -35,8 +35,7 @@
         <maven-dependency-plugin.version>3.9.0</maven-dependency-plugin.version>
 
         <java.version>25</java.version>
-        <server-port>8080</server-port>
-        
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>        
     </properties>
 
