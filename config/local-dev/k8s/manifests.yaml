@@ -1,0 +1,517 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: eventstream-local
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: eventstream-secrets
+  namespace: eventstream-local
+  labels:
+    app: eventstream-nexus
+    component: shared-secrets
+type: Opaque
+stringData:
+  EVENTSTREAM_LIQUIBASE_PASSWORD: ${EVENTSTREAM_LIQUIBASE_PASSWORD}
+  EVENTSTREAM_APP_PASSWORD: ${EVENTSTREAM_APP_PASSWORD}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-sql
+  namespace: eventstream-local
+  labels:
+    app: eventstream-nexus
+    component: postgres
+data:
+  init-eventstream-schema.sql: |
+    -- Create the eventstream schema if it doesn't exist
+    CREATE SCHEMA IF NOT EXISTS eventstream;
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: liquibase-changelogs
+  namespace: eventstream-local
+  labels:
+    app: eventstream-nexus
+    component: liquibase
+data:
+  changelog-master.yaml: |
+    databaseChangeLog:
+      - include:
+          file: changes/001-init-user.yaml
+      - include:
+          file: changes/002-add-client-table.yaml
+      - include:
+          file: changes/003-add-idempotency-table.yaml
+  001-init-user.yaml: |
+    databaseChangeLog:
+      - changeSet:
+          id: 001-create-app-user
+          author: lmo
+          changes:
+            - sql:
+                sql: |
+                  CREATE ROLE eventstream_rw;
+                  GRANT USAGE ON SCHEMA eventstream TO eventstream_rw;
+                  ALTER DEFAULT PRIVILEGES IN SCHEMA eventstream
+                  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO eventstream_rw;
+
+                  CREATE USER eventstream_app WITH PASSWORD '${EVENTSTREAM_APP_PASSWORD}';
+                  ALTER ROLE eventstream_app SET search_path TO eventstream;
+                  GRANT eventstream_rw TO eventstream_app;
+  002-add-client-table.yaml: |
+    databaseChangeLog:
+      - changeSet:
+          id: 002-add-client-table
+          author: lmo
+          changes:
+            - createTable:
+                tableName: clients
+                columns:
+                  - column:
+                    name: id
+                    type: BIGINT
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+
+                  - column:
+                      name: name
+                      type: VARCHAR(255)
+                      constraints:
+                        nullable: false
+
+                  - column:
+                      name: email
+                      type: VARCHAR(255)
+                      constraints:
+                        nullable: false
+
+                  - column:
+                      name: created_at
+                      type: TIMESTAMP WITH TIME ZONE
+                      defaultValueComputed: CURRENT_TIMESTAMP
+                      constraints:
+                        nullable: false
+
+                  - column:
+                      name: updated_at
+                      type: TIMESTAMP WITH TIME ZONE
+                      defaultValueComputed: CURRENT_TIMESTAMP
+                      constraints:
+                        nullable: false
+
+            - addUniqueConstraint:
+                tableName: clients
+                columnNames: email
+                constraintName: uq_clients_email
+  003-add-idempotency-table.yaml: |
+    databaseChangeLog:
+      - changeSet:
+          id: 003-add-idempotency-table
+          author: lmo
+          changes:
+            - createTable:
+                tableName: idempotency_keys
+                columns:
+                  - column:
+                      name: key
+                      type: VARCHAR(255)
+                      constraints:
+                        primaryKey: true
+                        nullable: false
+
+                  - column:
+                      name: created_at
+                      type: TIMESTAMP WITH TIME ZONE
+                      defaultValueComputed: CURRENT_TIMESTAMP
+                      constraints:
+                        nullable: false
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: eventstream-local
+  labels:
+    app: eventstream-nexus
+    component: postgres
+spec:
+  selector:
+    app: eventstream-nexus
+    component: postgres
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: eventstream-local
+  labels:
+    app: eventstream-nexus
+    component: postgres
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eventstream-nexus
+      component: postgres
+  template:
+    metadata:
+      labels:
+        app: eventstream-nexus
+        component: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: eventstream
+            - name: POSTGRES_USER
+              value: eventstream_liquibase
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: eventstream-secrets
+                  key: EVENTSTREAM_LIQUIBASE_PASSWORD
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - eventstream_liquibase
+                - -d
+                - eventstream
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - eventstream_liquibase
+                - -d
+                - eventstream
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+            - name: init-sql
+              mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
+      volumes:
+        - name: init-sql
+          configMap:
+            name: postgres-init-sql
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: liquibase-migrate
+  namespace: eventstream-local
+  labels:
+    app: eventstream-nexus
+    component: liquibase
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: eventstream-nexus
+        component: liquibase
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: liquibase
+          image: liquibase/liquibase:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - >-
+              until pg_isready -h postgres -p 5432 -U eventstream_liquibase -d eventstream; do
+                sleep 2;
+              done;
+              liquibase update
+          env:
+            - name: LIQUIBASE_COMMAND_CHANGELOG_FILE
+              value: changelog-master.yaml
+            - name: LIQUIBASE_COMMAND_URL
+              value: jdbc:postgresql://postgres:5432/eventstream?currentSchema=eventstream
+            - name: LIQUIBASE_COMMAND_USERNAME
+              value: eventstream_liquibase
+            - name: LIQUIBASE_COMMAND_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: eventstream-secrets
+                  key: EVENTSTREAM_LIQUIBASE_PASSWORD
+            - name: LIQUIBASE_LOG_LEVEL
+              value: INFO
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: eventstream-secrets
+                  key: EVENTSTREAM_LIQUIBASE_PASSWORD
+          volumeMounts:
+            - name: changelogs
+              mountPath: /liquibase
+              readOnly: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 250m
+              memory: 512Mi
+      volumes:
+        - name: changelogs
+          configMap:
+            name: liquibase-changelogs
+            items:
+              - key: changelog-master.yaml
+                path: changelog-master.yaml
+              - key: 001-init-user.yaml
+                path: changes/001-init-user.yaml
+              - key: 002-add-client-table.yaml
+                path: changes/002-add-client-table.yaml
+              - key: 003-add-idempotency-table.yaml
+                path: changes/003-add-idempotency-table.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: eventstream-local
+  labels:
+    app: eventstream-nexus
+    component: kafka
+spec:
+  selector:
+    app: eventstream-nexus
+    component: kafka
+  ports:
+    - name: kafka
+      port: 9092
+      targetPort: 9092
+    - name: controller
+      port: 9093
+      targetPort: 9093
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+  namespace: eventstream-local
+  labels:
+    app: eventstream-nexus
+    component: kafka
+spec:
+  serviceName: kafka
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eventstream-nexus
+      component: kafka
+  template:
+    metadata:
+      labels:
+        app: eventstream-nexus
+        component: kafka
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: kafka
+          image: apache/kafka:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9092
+            - containerPort: 9093
+          env:
+            - name: KAFKA_ENABLE_KRAFT
+              value: "yes"
+            - name: KAFKA_PROCESS_ROLES
+              value: broker,controller
+            - name: KAFKA_NODE_ID
+              value: "1"
+            - name: KAFKA_CONTROLLER_QUORUM_VOTERS
+              value: 1@kafka:9093
+            - name: KAFKA_LISTENERS
+              value: PLAINTEXT://:9092,CONTROLLER://:9093
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: PLAINTEXT://kafka:9092
+            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+              value: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+            - name: KAFKA_CONTROLLER_LISTENER_NAMES
+              value: CONTROLLER
+            - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+              value: "false"
+          command:
+            - /bin/sh
+            - -c
+            - >-
+              /etc/kafka/docker/run &
+              controller_pid=$!;
+              sleep 5;
+              for topic in client-created client-updated client-deleted; do
+                /opt/kafka/bin/kafka-topics.sh --create --topic "$topic" --partitions 3 --replication-factor 1 --if-not-exists --bootstrap-server localhost:9092;
+              done;
+              wait $controller_pid
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+            initialDelaySeconds: 60
+            periodSeconds: 20
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/kafka/data
+            - name: metadata
+              mountPath: /var/lib/kafka/metadata
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1
+              memory: 2Gi
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+    - metadata:
+        name: metadata
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eventstream-app
+  namespace: eventstream-local
+  labels:
+    app: eventstream-nexus
+    component: app
+spec:
+  selector:
+    app: eventstream-nexus
+    component: app
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eventstream-app
+  namespace: eventstream-local
+  labels:
+    app: eventstream-nexus
+    component: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eventstream-nexus
+      component: app
+  template:
+    metadata:
+      labels:
+        app: eventstream-nexus
+        component: app
+    spec:
+      initContainers:
+        - name: wait-for-kafka
+          image: busybox:1.36
+          command:
+            - /bin/sh
+            - -c
+            - >-
+              until nc -z kafka 9092; do
+                sleep 2;
+              done
+      containers:
+        - name: eventstream-app
+          image: eventstream-nexus:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres:5432/eventstream?currentSchema=eventstream
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: kafka:9092
+            - name: EVENTSTREAM_APP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: eventstream-secrets
+                  key: EVENTSTREAM_APP_PASSWORD
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
