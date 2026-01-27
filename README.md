@@ -2,7 +2,7 @@
   <img src="https://dummyimage.com/600x150/000/fff&text=EventStream+Nexus" alt="EventStream Nexus Logo"/> 
 </p> 
 <p align="center">
-  <strong>API‑first • Idempotent • Event‑enabled • Java Records • Spring Boot 4 • Java 2</strong> 
+  <strong>API‑first • Idempotent • Event‑enabled • Java Records • Spring Boot 4 • Java 25</strong> 
 </p> 
 <p align="center"> 
 <!-- Core stack -->
@@ -10,7 +10,6 @@
 <img src="https://img.shields.io/badge/Spring%20Boot-4.0.0-6DB33F?style=for-the-badge" /> 
 <img src="https://img.shields.io/badge/API-OpenAPI%203.0-6BA539?style=for-the-badge" /> 
 <img src="https://img.shields.io/badge/Mapping-MapStruct-FF6F00?style=for-the-badge" /> 
-<img src="https://img.shields.io/badge/Boilerplate-Lombok-CA2C92?style=for-the-badge" />
 <img src="https://img.shields.io/badge/Scheduling-ShedLock-7952B3?style=for-the-badge" />
 <!-- Infrastructure -->
 <img src="https://img.shields.io/badge/Database-PostgreSQL%2016-336791?style=for-the-badge" /> 
@@ -35,7 +34,7 @@ EventStream Nexus is an **API‑first**, **contract‑driven**, **idempotent**, 
 - **ShedLock** for distributed‑safe scheduling
 - **Kafka + Avro** for outbound domain events
 - **Maven** for reproducible builds
-- **GitHub Actions** for CI, CodeQL, OWASP, and Liquibase validation
+- **GitHub Actions** for CI, CodeQL, OWASP and Liquibase validation
 
 The OpenAPI specification defines the entire API surface. All API interfaces and record models are generated automatically.
 
