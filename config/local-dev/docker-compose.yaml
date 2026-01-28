@@ -53,8 +53,7 @@ services:
       - eventstream_network
 
   # ---------------------------------------------------------
-  # Kafka Broker (single-node for development) &
-  # Kafka Topic Initialization
+  # Kafka Broker (single-node for development) 
   # ---------------------------------------------------------
   kafka:
     image: apache/kafka:latest
@@ -70,6 +69,7 @@ services:
       KAFKA_NODE_ID: "1"
       KAFKA_PROCESS_ROLES: "broker,controller"
       KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
 
       # Listeners and Advertised Listeners
       KAFKA_LISTENERS: "INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093"
@@ -77,6 +77,12 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT"
       KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+      KAFKA_MIN_INSYNC_REPLICAS: "1"
+      KAFKA_DEFAULT_REPLICATION_FACTOR: "1"
 
       # REQUIRED for KRaft
       KAFKA_LOG_DIRS: "/var/lib/kafka/data"
@@ -95,35 +101,29 @@ services:
     networks:
       - eventstream_network
 
+  # ---------------------------------------------------------
+  # Kafka Topic Initialization (runs once, then exits)
+  # ---------------------------------------------------------
   kafka-topic-init:
     image: apache/kafka:latest
     container_name: eventstream-topic-init
     depends_on:
       kafka:
         condition: service_healthy
-    entrypoint: ["/bin/bash", "-c"]
-    command: |
-      /opt/kafka/bin/kafka-topics.sh --create \
-        --topic client-created \
-        --partitions 3 \
-        --replication-factor 1 \
-        --if-not-exists \
-        --bootstrap-server kafka:29092
-      /opt/kafka/bin/kafka-topics.sh --create \
-        --topic client-updated \
-        --partitions 3 \
-        --replication-factor 1 \
-        --if-not-exists \
-        --bootstrap-server kafka:29092
-      /opt/kafka/bin/kafka-topics.sh --create \
-        --topic client-deleted \
-        --partitions 3 \
-        --replication-factor 1 \
-        --if-not-exists \
-        --bootstrap-server kafka:29092
+    command:
+      - /bin/bash
+      - -ec
+      - >-
+        /opt/kafka/bin/kafka-topics.sh --create --topic client-created --partitions 3 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092 &&
+        /opt/kafka/bin/kafka-topics.sh --create --topic _schemas --partitions 1 --replication-factor 1 --config cleanup.policy=compact --if-not-exists --bootstrap-server kafka:29092 &&
+        /opt/kafka/bin/kafka-topics.sh --create --topic client-updated --partitions 3 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092 &&
+        /opt/kafka/bin/kafka-topics.sh --create --topic client-deleted --partitions 3 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
     networks:
       - eventstream_network
 
+  # ---------------------------------------------------------
+  # Schema Registry
+  # ---------------------------------------------------------
   schema-registry:
     image: confluentinc/cp-schema-registry:latest
     container_name: eventstream-schema-registry
@@ -140,7 +140,6 @@ services:
     networks:
       - eventstream_network
 
-
   # ---------------------------------------------------------
   # EventStream Application
   # ---------------------------------------------------------
@@ -153,7 +152,7 @@ services:
   #       condition: service_healthy
   #   environment:
   #     SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/eventstream?currentSchema=eventstream
-  #     SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  #     SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
   #     SPRING_KAFKA_PRODUCER_PROPERTIES_SCHEMA_REGISTRY_URL: http://kafka:8081
   #     SPRING_KAFKA_CONSUMER_PROPERTIES_SCHEMA_REGISTRY_URL: http://kafka:8081
   #   ports:
