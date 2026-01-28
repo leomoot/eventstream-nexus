@@ -8,9 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * via {@link SpringApplication}.
  */
 @SpringBootApplication
-public class Application {
+public class EventstreamNexusApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(Application.class, args);
+    SpringApplication.run(EventstreamNexusApplication.class, args);
   }
 }

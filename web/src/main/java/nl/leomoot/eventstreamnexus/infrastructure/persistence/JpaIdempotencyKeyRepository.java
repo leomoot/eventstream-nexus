@@ -1,4 +1,4 @@
-package nl.leomoot.eventstreamnexus.domain.repository;
+package nl.leomoot.eventstreamnexus.infrastructure.persistence;
 
 import java.util.UUID;
 
@@ -9,5 +9,5 @@ import nl.leomoot.eventstreamnexus.domain.model.IdempotencyKeyEntity;
 /**
  * Repository persisting {@link IdempotencyKeyEntity} records keyed by the idempotency token.
  */
-public interface IdempotencyKeyRepository extends JpaRepository<IdempotencyKeyEntity, UUID> {
+public interface JpaIdempotencyKeyRepository extends JpaRepository<IdempotencyKeyEntity, UUID> {
 }

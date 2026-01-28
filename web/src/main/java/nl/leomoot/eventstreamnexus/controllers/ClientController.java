@@ -9,12 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import nl.leomoot.eventstreamnexus.api.V1Api;
+import nl.leomoot.eventstreamnexus.application.mappers.ClientMapper;
+import nl.leomoot.eventstreamnexus.application.services.ClientService;
 import nl.leomoot.eventstreamnexus.errors.MissingHeaderException;
-import nl.leomoot.eventstreamnexus.mappers.ClientMapper;
 import nl.leomoot.eventstreamnexus.model.Client;
 import nl.leomoot.eventstreamnexus.model.ClientPage;
 import nl.leomoot.eventstreamnexus.model.CreateClientRequest;
-import nl.leomoot.eventstreamnexus.services.ClientService;
 
 /**
  * REST controller for managing {@link Client} resources via {@link ClientService}.
@@ -43,7 +43,7 @@ public class ClientController implements V1Api {
      * @inheritDoc
      */
     @Override
-    public ResponseEntity<Client> createClient(UUID idempotencyKey, CreateClientRequest request) {
+    public ResponseEntity<Client> createClient(CreateClientRequest request, UUID idempotencyKey) {
         if (idempotencyKey == null) {
             throw new MissingHeaderException(IDEMPOTENCY_HEADER);
         }

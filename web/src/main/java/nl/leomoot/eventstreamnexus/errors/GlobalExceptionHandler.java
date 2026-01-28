@@ -14,12 +14,12 @@ import nl.leomoot.eventstreamnexus.model.ErrorResponse;
 public class GlobalExceptionHandler {
 
     /**
-     * Returns a HTTP 400 (Bad Request) response when an idempotency key is reused.
+     * Returns a HTTP 409 (Conflict) response when an idempotency key is reused.
      */
     @ExceptionHandler(DuplicateIdempotencyKeyException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateIdempotencyKey(DuplicateIdempotencyKeyException ex) {
         var error = new ErrorResponse("duplicate_idempotency_key", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     /**

@@ -1,13 +1,13 @@
-package nl.leomoot.eventstreamnexus.mappers;
+package nl.leomoot.eventstreamnexus.application.mappers;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import nl.leomoot.eventstreamnexus.application.dto.ClientPageDto;
 import nl.leomoot.eventstreamnexus.domain.model.ClientEntity;
 import nl.leomoot.eventstreamnexus.model.Client;
 import nl.leomoot.eventstreamnexus.model.ClientPage;
 import nl.leomoot.eventstreamnexus.model.CreateClientRequest;
-import nl.leomoot.eventstreamnexus.services.dto.ClientPageDto;
 
 /** 
  * Mapper for converting between {@link ClientEntity} and {@link Client} models.

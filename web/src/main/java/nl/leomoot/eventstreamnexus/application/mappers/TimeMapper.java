@@ -1,4 +1,4 @@
-package nl.leomoot.eventstreamnexus.mappers;
+package nl.leomoot.eventstreamnexus.application.mappers;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;

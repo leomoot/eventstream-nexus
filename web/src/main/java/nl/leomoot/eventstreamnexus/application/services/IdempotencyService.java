@@ -1,9 +1,9 @@
-package nl.leomoot.eventstreamnexus.services;
+package nl.leomoot.eventstreamnexus.application.services;
 
 import java.util.UUID;
 
 /**
- * Guards command handlers with idempotency semantics keyed by a unique token.
+ * Guards command handlers with idempotency semantics keyed by an unique token.
  */
 public interface IdempotencyService {
 
