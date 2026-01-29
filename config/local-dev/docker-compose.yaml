@@ -164,7 +164,7 @@ services:
       - kafka
       - schema-registry
     ports:
-      - "8081:8080"
+      - "9080:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
@@ -219,23 +219,23 @@ services:
     networks:
       - eventstream_network
   
-grafana:
-  image: grafana/grafana:latest
-  container_name: eventstream-grafana
-  restart: unless-stopped
-  depends_on:
-    - prometheus
-    - loki
-  ports:
-    - "3000:3000"
-  environment:
-    GF_SECURITY_ADMIN_USER: admin
-    GF_SECURITY_ADMIN_PASSWORD: admin
-  volumes:
-    - ./grafana/provisioning:/etc/grafana/provisioning
-    - ./grafana/dashboards:/var/lib/grafana/dashboards
-  networks:
-    - eventstream_network
+  grafana:
+    image: grafana/grafana:latest
+    container_name: eventstream-grafana
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+      - loki
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - eventstream_network
 
   # ---------------------------------------------------------
   # EventStream Application
