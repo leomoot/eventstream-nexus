@@ -5,4 +5,5 @@ databaseChangeLog:
       file: changes/002-add-client-table.yaml
   - include:
       file: changes/003-add-idempotency-table.yaml
-
+  - include:
+      file: changes/004-add-shedlock-table.yaml
