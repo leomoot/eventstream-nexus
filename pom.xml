@@ -20,6 +20,7 @@
         <avro.version>1.12.1</avro.version>
         <jackson-databind-nullable.version>0.2.8</jackson-databind-nullable.version>
         <kafka-avro-serializer.version>8.1.1</kafka-avro-serializer.version>
+        <logstash-logback-encoder.version>9.0</logstash-logback-encoder.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <openapi-generator.version>7.19.0</openapi-generator.version>
         <openapi-to-java-records.version>3.3.0</openapi-to-java-records.version>

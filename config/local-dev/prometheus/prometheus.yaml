@@ -1,0 +1,20 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  # Spring Boot metrics
+  - job_name: 'spring-app'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['spring-app:8080']
+
+  # Kafka Exporter metrics
+  - job_name: 'kafka-exporter'
+    static_configs:
+      - targets: ['kafka-exporter:9308']
+
+  # Prometheus self-monitoring (optional)
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus:9090']
