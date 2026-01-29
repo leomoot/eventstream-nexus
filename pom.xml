@@ -58,18 +58,6 @@
         </dependencies>
     </dependencyManagement>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>com.google.cloud.tools</groupId>
-                    <artifactId>jib-maven-plugin</artifactId>
-                    <version>${jib-maven-plugin.version}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>        
-    </build>
-
     <repositories>
         <repository>
             <id>confluent</id>

@@ -10,6 +10,8 @@ databaseChangeLog:
               ALTER DEFAULT PRIVILEGES IN SCHEMA eventstream
               GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO eventstream_rw;
               
-              CREATE USER eventstream_app WITH PASSWORD '${EVENTSTREAM_APP_PASSWORD}'; -- use environment variable for password
+              -- use environment variable for password, see docker-compose.yaml
+              CREATE USER eventstream_app WITH PASSWORD '${EVENTSTREAM_APP_PASSWORD}';
+
               ALTER ROLE eventstream_app SET search_path TO eventstream;
               GRANT eventstream_rw TO eventstream_app;

@@ -65,3 +65,17 @@ mapstruct:
   unmappedTargetPolicy: ERROR
   unmappedSourcePolicy: ERROR
   defaultComponentModel: spring
+
+shedlock:
+  enabled: true
+  default-lock-at-most-for: 10m
+  default-lock-at-least-for: 0s
+  table-name: shedlock
+
+scheduling:
+  cleanup:
+    cron: "0 */5 * * * *"
+    lock-at-most-for: 5m
+    lock-at-least-for: 1m
+    retention-days: 7
+

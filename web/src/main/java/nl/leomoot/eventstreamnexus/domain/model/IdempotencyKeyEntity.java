@@ -1,7 +1,9 @@
 package nl.leomoot.eventstreamnexus.domain.model;
 
+import java.time.Instant;
 import java.util.UUID;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -15,6 +17,9 @@ public class IdempotencyKeyEntity {
 
     @Id
     private UUID key;
+    
+    @Column(nullable = false)
+    private Instant createdAt;
 
     protected IdempotencyKeyEntity() {
         // JPA requires a no-arg constructor for entity instantiation
@@ -36,5 +41,12 @@ public class IdempotencyKeyEntity {
      */
     public UUID getKey() {
         return key;
+    }
+
+    /**
+     * @return creation timestamp of the client record
+     */
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 }

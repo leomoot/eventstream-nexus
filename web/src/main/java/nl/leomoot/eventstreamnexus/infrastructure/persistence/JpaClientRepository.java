@@ -1,4 +1,4 @@
-package nl.leomoot.eventstreamnexus.domain.repository;
+package nl.leomoot.eventstreamnexus.infrastructure.persistence;
 
 import java.nio.ByteBuffer;
 import java.util.Base64;
@@ -9,17 +9,17 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.EntityManager;
+import nl.leomoot.eventstreamnexus.application.dto.ClientPageDto;
 import nl.leomoot.eventstreamnexus.domain.model.ClientEntity;
-import nl.leomoot.eventstreamnexus.services.dto.ClientPageDto;
 
 /**
  * Repository implementation that backs {@link ClientRepository}
  * with cursor-based pagination support.
  */
 @Repository
-public class ClientRepository extends SimpleJpaRepository<ClientEntity, Long> {
+public class JpaClientRepository extends SimpleJpaRepository<ClientEntity, Long> {
 
-    private static final Logger log = LoggerFactory.getLogger(ClientRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(JpaClientRepository.class);
 
     private final EntityManager entityManager;
 
@@ -29,7 +29,7 @@ public class ClientRepository extends SimpleJpaRepository<ClientEntity, Long> {
      *
      * @param em managed {@link EntityManager}
      */
-    public ClientRepository(EntityManager em) {
+    public JpaClientRepository(EntityManager em) {
         super(ClientEntity.class, em);
         this.entityManager = em;
     }

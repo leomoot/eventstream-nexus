@@ -1,4 +1,4 @@
-package nl.leomoot.eventstreamnexus.services.dto;
+package nl.leomoot.eventstreamnexus.application.dto;
 
 import java.util.List;
 

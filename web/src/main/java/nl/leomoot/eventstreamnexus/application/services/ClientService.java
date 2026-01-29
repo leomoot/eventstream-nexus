@@ -1,10 +1,10 @@
-package nl.leomoot.eventstreamnexus.services;
+package nl.leomoot.eventstreamnexus.application.services;
 
 import java.util.UUID;
 
+import nl.leomoot.eventstreamnexus.application.dto.ClientPageDto;
 import nl.leomoot.eventstreamnexus.domain.model.ClientEntity;
 import nl.leomoot.eventstreamnexus.model.CreateClientRequest;
-import nl.leomoot.eventstreamnexus.services.dto.ClientPageDto;
 
 /** 
  * Service interface for managing {@link ClientEntity} instances
