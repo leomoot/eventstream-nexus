@@ -143,28 +143,28 @@ services:
   # ---------------------------------------------------------
   # EventStream Application
   # ---------------------------------------------------------
-  app:
-    image: eventstream-nexus:latest
-    container_name: eventstream-app
-    restart: unless-stopped
-    depends_on:
-      kafka:
-        condition: service_healthy
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/eventstream?currentSchema=eventstream
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
-      SPRING_KAFKA_PRODUCER_PROPERTIES_SCHEMA_REGISTRY_URL: http://kafka:8081
-      SPRING_KAFKA_CONSUMER_PROPERTIES_SCHEMA_REGISTRY_URL: http://kafka:8081
-    ports:
-      - "8080:8080"
-    networks:
-      - eventstream_network
-    healthcheck:
-      test: ['CMD', 'curl', '--fail', 'http://localhost:8080/actuator/health/liveness']
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
+  # app:
+  #   image: eventstream-nexus:latest
+  #   container_name: eventstream-app
+  #   restart: unless-stopped
+  #   depends_on:
+  #     kafka:
+  #       condition: service_healthy
+  #   environment:
+  #     SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/eventstream?currentSchema=eventstream
+  #     SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+  #     SPRING_KAFKA_PRODUCER_PROPERTIES_SCHEMA_REGISTRY_URL: http://kafka:8081
+  #     SPRING_KAFKA_CONSUMER_PROPERTIES_SCHEMA_REGISTRY_URL: http://kafka:8081
+  #   ports:
+  #     - "8080:8080"
+  #   networks:
+  #     - eventstream_network
+  #   healthcheck:
+  #     test: ['CMD', 'curl', '--fail', 'http://localhost:8080/actuator/health/liveness']
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 3
+  #     start_period: 30s
 
 # ---------------------------------------------------------
 # Volumes (for persistent storage)

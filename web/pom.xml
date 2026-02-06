@@ -298,8 +298,8 @@
                         <env>
                             <BP_JVM_TYPE>JRE</BP_JVM_TYPE>
                             <BP_UTILS_INSTALL>curl</BP_UTILS_INSTALL>
-                            <BP_JVM_CDS_ENABLED>true</BP_JVM_CDS_ENABLED>
-                            <BP_SPRING_AOT_ENABLED>true</BP_SPRING_AOT_ENABLED>
+                            <!-- BP_JVM_CDS_ENABLED>true</BP_JVM_CDS_ENABLED>
+                            <BP_SPRING_AOT_ENABLED>true</BP_SPRING_AOT_ENABLED -->
                         </env>
                     </image>
                 </configuration>
