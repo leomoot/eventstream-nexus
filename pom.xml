@@ -18,21 +18,21 @@
 
     <properties>
         <avro.version>1.12.1</avro.version>
-        <jackson-databind-nullable.version>0.2.8</jackson-databind-nullable.version>
+        <jackson-databind-nullable.version>0.2.9</jackson-databind-nullable.version>
         <kafka-avro-serializer.version>8.1.1</kafka-avro-serializer.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <openapi-generator.version>7.19.0</openapi-generator.version>
-        <openapi-to-java-records.version>3.3.0</openapi-to-java-records.version>
+        <openapi-generator.version>7.20.0</openapi-generator.version>
+        <openapi-to-java-records.version>3.4.0</openapi-to-java-records.version>
         <shedlock.version>7.6.0</shedlock.version>
         <spring-boot.version>4.0.2</spring-boot.version>
-        <swagger-annotations-jakarta.version>2.2.42</swagger-annotations-jakarta.version>
+        <swagger-annotations-jakarta.version>2.2.43</swagger-annotations-jakarta.version>
 
         <testcontainers.version>1.21.4</testcontainers.version>
 
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <jib-maven-plugin.version>3.5.1</jib-maven-plugin.version>
-        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
-        <maven-dependency-plugin.version>3.9.0</maven-dependency-plugin.version>
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
 
         <java.version>25</java.version>
 
