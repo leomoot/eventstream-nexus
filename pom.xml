@@ -24,7 +24,7 @@
         <openapi-generator.version>7.19.0</openapi-generator.version>
         <openapi-to-java-records.version>3.3.0</openapi-to-java-records.version>
         <shedlock.version>7.6.0</shedlock.version>
-        <spring-boot.version>4.0.2</spring-boot.version>
+        <spring-boot.version>4.0.3</spring-boot.version>
         <swagger-annotations-jakarta.version>2.2.42</swagger-annotations-jakarta.version>
 
         <testcontainers.version>1.21.4</testcontainers.version>
