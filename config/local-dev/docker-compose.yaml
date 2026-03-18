@@ -4,7 +4,7 @@ services:
   # PostgreSQL Database
   # ---------------------------------------------------------
   postgres:
-    image: postgres:16
+    image: postgres:16@sha256:2586e2a95d1c9b31cb2967feb562948f7d364854453d703039b6efa45fe48417
     container_name: eventstream-postgres
     restart: unless-stopped
     ports:
@@ -56,7 +56,7 @@ services:
   # Kafka Broker (single-node for development) 
   # ---------------------------------------------------------
   kafka:
-    image: apache/kafka:latest
+    image: apache/kafka:latest@sha256:9516fb7634bad307d17c33b589fde9023003b0cb761374f500002b980a3149b9
     container_name: eventstream-kafka
     user: "0:0" # run as root to avoid volume permission issues
     restart: unless-stopped
@@ -105,7 +105,7 @@ services:
   # Kafka Topic Initialization (runs once, then exits)
   # ---------------------------------------------------------
   kafka-topic-init:
-    image: apache/kafka:latest
+    image: apache/kafka:latest@sha256:9516fb7634bad307d17c33b589fde9023003b0cb761374f500002b980a3149b9
     container_name: eventstream-topic-init
     depends_on:
       kafka:
@@ -125,7 +125,7 @@ services:
   # Schema Registry
   # ---------------------------------------------------------
   schema-registry:
-    image: confluentinc/cp-schema-registry:latest
+    image: confluentinc/cp-schema-registry:latest@sha256:9d6e55e7e141274695c730eb880cc86cf0d38936295337d2d0ef0856b4e85b75
     container_name: eventstream-schema-registry
     restart: unless-stopped
     depends_on:
