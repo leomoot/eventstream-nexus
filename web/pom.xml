@@ -258,47 +258,6 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
-
-            <!-- Spring Boot plugin -->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot.version}</version>
-                <executions>
-                    <!-- Creates the fat JAR -->                
-                    <execution>
-                        <id>repackage</id>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                    <!-- Adds build metadata (useful for Actuator /info) -->
-                    <execution>
-                        <id>build-info</id>
-                        <goals>
-                            <goal>build-info</goal>
-                        </goals>
-                    </execution>
-                    <!-- Builds the Docker image -->
-                    <execution>
-                        <id>build-image</id>
-                        <goals>
-                            <goal>build-image-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <image>
-                        <name>eventstream-nexus:latest</name>
-                        <!-- Gives us the Utilities buildpack for curl (healtcheck) -->
-                        <builder>paketobuildpacks/builder-jammy-full</builder>                    
-                        <env>
-                            <BP_JVM_TYPE>JRE</BP_JVM_TYPE>
-                            <BP_UTILS_INSTALL>curl</BP_UTILS_INSTALL>
-                        </env>
-                    </image>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 </project>
