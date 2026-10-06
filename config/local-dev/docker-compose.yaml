@@ -4,7 +4,7 @@ services:
   # PostgreSQL Database
   # ---------------------------------------------------------
   postgres:
-    image: postgres:16
+    image: postgres:18@sha256:fc973eb97c9fd04bfa1840e0f510719a584ccb3be8debfe6a4144637a9dfe8cf
     container_name: eventstream-postgres
     restart: unless-stopped
     ports:
